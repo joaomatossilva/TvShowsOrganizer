@@ -5,6 +5,7 @@ Tv Shows Organizer is a simple script I use to organize the tv shows files that 
 from my Download Manager tool on my NAS, to the layout that is required for Xbmc.
 
 It should transfom this
+
 |.
 |..
 |-- Showname1.S01E01.avi
@@ -13,9 +14,13 @@ It should transfom this
 |-- Showname2.S01E01.avi
 
 Into to this:
+
 |.
+
 |..
+
 |-- Showname1
+
 |  |-- Season 1
 |  |  |-- Showname1.S01E01.avi
 |  |  |-- Showname1.S01E02.avi
