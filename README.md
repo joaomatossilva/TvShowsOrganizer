@@ -6,28 +6,28 @@ from my Download Manager tool on my NAS, to the layout that is required for Xbmc
 
 It should transfom this
 
-|.  
-|..  
-|-- Showname1.S01E01.avi  
-|-- Showname1.S01E02.avi  
-|-- Showname1.S02E01.avi  
-|-- Showname2.S01E01.avi  
+    |.  
+    |..  
+    |-- Showname1.S01E01.avi  
+    |-- Showname1.S01E02.avi  
+    |-- Showname1.S02E01.avi  
+    |-- Showname2.S01E01.avi  
 
 Into to this:
 
-|.  
-|..  
-|-- Showname1  
-|  |-- Season 1  
-|  |  |-- Showname1.S01E01.avi  
-|  |  |-- Showname1.S01E02.avi  
-|  |   
-|  |-- Season 2  
-|  |  |-- Showname1.S02E01.avi  
-|  
-|-- Showname2  
-|  |-- Season 1  
-|  |  |-- Showname2.S01E01.avi  
+    |.  
+    |..  
+    |-- Showname1  
+    |  |-- Season 1  
+    |  |  |-- Showname1.S01E01.avi  
+    |  |  |-- Showname1.S01E02.avi  
+    |  |   
+    |  |-- Season 2  
+    |  |  |-- Showname1.S02E01.avi  
+    |  
+    |-- Showname2  
+    |  |-- Season 1  
+    |  |  |-- Showname2.S01E01.avi  
 
 
 Configuration
