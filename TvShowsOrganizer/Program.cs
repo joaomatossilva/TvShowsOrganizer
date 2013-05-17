@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace TvShowsOrganizer
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var shows = GetTvShows(ConfigurationManager.AppSettings["InputFolder"]);
             foreach (var tvShowFile in shows)
@@ -28,15 +26,18 @@ namespace TvShowsOrganizer
         private static IEnumerable<TvShowFile> GetTvShows(string inputFolder)
         {
             var files = Directory.GetFiles(inputFolder);
-            var shows = new List<TvShowFile>();
             foreach (var file in files)
             {
                 var relativePathFile = Path.GetFileName(file);
+                if (string.IsNullOrEmpty(relativePathFile))
+                {
+                    continue;
+                }
                 var matches = ShowNameEpisodeAndSeasonRegularExpression.Match(relativePathFile);
                 if (matches.Success)
                 {
                     string tvShowTitle = matches.Groups[1].ToString().Trim();
-                    tvShowTitle.Replace(".", " ");
+                    tvShowTitle = tvShowTitle.Replace(".", " ");
                     int season;
                     if(!int.TryParse(matches.Groups[2].Value, out season))
                     {
@@ -48,11 +49,9 @@ namespace TvShowsOrganizer
                             Title = tvShowTitle,
                             Season = season
                         };
-                    shows.Add(show);
+                    yield return show;
                 }
             }
-
-            return shows;
         }
 
         private static void MoveFile(string file, string outputFolder, string tvShowTitle, int season)
@@ -76,7 +75,13 @@ namespace TvShowsOrganizer
             }
             try
             {
-                string finalPathFile = Path.Combine(tvShowSeasonFolder, Path.GetFileName(file));
+                var fileName = Path.GetFileName(file);
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    Console.WriteLine("Error moving {0}: Unable to determine filename", file);
+                    return;
+                }
+                string finalPathFile = Path.Combine(tvShowSeasonFolder, fileName);
                 Console.WriteLine("Moving file to {0}", finalPathFile);
                 File.Move(file, finalPathFile);
             }
