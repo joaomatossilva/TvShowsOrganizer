@@ -12,6 +12,13 @@ It should transfom this
     |-- Showname1.S01E02.avi  
     |-- Showname1.S02E01.avi  
     |-- Showname2.S01E01.avi  
+    |-- Showname2.0102.avi 
+    |
+    |-- Showname2.S01E03
+    |  |--Showname2.0103.avi
+    |
+    |-- Showname2.0104
+    |  |--Showname2.S01E04.avi
 
 Into to this:
 
@@ -28,7 +35,9 @@ Into to this:
     |-- Showname2  
     |  |-- Season 1  
     |  |  |-- Showname2.S01E01.avi  
-
+    |  |  |-- Showname2.0102.avi
+    |  |  |-- Showname2.0103.avi
+    |  |  |-- Showname2.S01E04.avi 
 
 Configuration
 ==

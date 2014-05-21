@@ -21,34 +21,77 @@ namespace TvShowsOrganizer
             Console.WriteLine("End");
         }
 
-        private static readonly Regex ShowNameEpisodeAndSeasonRegularExpression = new Regex(@"(.*?)\.S(\d{1,2})E(\d{2})\.(.*)", RegexOptions.IgnoreCase);
-
-        private static IEnumerable<TvShowFile> GetTvShows(string inputFolder)
+        private static readonly IEnumerable<Regex> ShowNameEpisodeAndSeasonRegularExpressions = new []
         {
-            var files = Directory.GetFiles(inputFolder);
-            foreach (var file in files)
+            new Regex(@"(.*?)\.S(\d{1,2})E(\d{2})\.(.*)", RegexOptions.IgnoreCase),
+            new Regex(@"(.*?)\.(\d{1,2})(\d{2})\.(.*)", RegexOptions.IgnoreCase)
+        };
+
+        private static TvShowFile HandleFile(string file)
+        {
+            var relativePathFile = Path.GetFileName(file);
+            if (string.IsNullOrEmpty(relativePathFile))
             {
-                var relativePathFile = Path.GetFileName(file);
-                if (string.IsNullOrEmpty(relativePathFile))
+                return null;
+            }
+            foreach (var regex in ShowNameEpisodeAndSeasonRegularExpressions)
+            {
+                var matches = regex.Match(relativePathFile);
+                if (!matches.Success)
                 {
                     continue;
                 }
-                var matches = ShowNameEpisodeAndSeasonRegularExpression.Match(relativePathFile);
-                if (matches.Success)
+                string tvShowTitle = matches.Groups[1].ToString().Trim();
+                tvShowTitle = tvShowTitle.Replace(".", " ");
+                int season;
+                if (!int.TryParse(matches.Groups[2].Value, out season))
                 {
-                    string tvShowTitle = matches.Groups[1].ToString().Trim();
-                    tvShowTitle = tvShowTitle.Replace(".", " ");
-                    int season;
-                    if(!int.TryParse(matches.Groups[2].Value, out season))
+                    season = 0;
+                }
+                return new TvShowFile
+                {
+                    File = file,
+                    Title = tvShowTitle,
+                    Season = season
+                };
+            }
+            return null;
+        }
+        
+        private static IEnumerable<TvShowFile> GetTvShows(string inputFolder)
+        {
+            /* test subfolders for recursivity */
+            var folders = Directory.GetDirectories(inputFolder);
+            foreach (var folder in folders)
+            {
+                foreach (var regex in ShowNameEpisodeAndSeasonRegularExpressions)
+                {
+                    var directoryName = Path.GetFileName(folder);
+                    if (string.IsNullOrEmpty(directoryName))
                     {
-                        season = 0;
+                        break;
                     }
-                    var show = new TvShowFile
+                    var matches = regex.Match(directoryName);
+                    if (!matches.Success)
+                    {
+                        continue;
+                    }
+                    foreach (var tvShowFile in GetTvShows(folder))
+                    {
+                        if (tvShowFile != null)
                         {
-                            File = file,
-                            Title = tvShowTitle,
-                            Season = season
-                        };
+                            yield return tvShowFile;
+                        }
+                    }
+                }
+            }
+
+            var files = Directory.GetFiles(inputFolder);
+            foreach (var file in files)
+            {
+                var show = HandleFile(file);
+                if (show != null)
+                {
                     yield return show;
                 }
             }
@@ -60,18 +103,21 @@ namespace TvShowsOrganizer
             if (!Directory.Exists(outputFolder))
             {
                 Directory.CreateDirectory(outputFolder);
+                Console.WriteLine("Directory {0} created", outputFolder);
             }
             string tvShowFolder = Path.Combine(outputFolder, tvShowTitle);
             Console.WriteLine("Checking if exists {0}", tvShowFolder);
             if (!Directory.Exists(tvShowFolder))
             {
                 Directory.CreateDirectory(tvShowFolder);
+                Console.WriteLine("Directory {0} created", tvShowFolder);
             }
             string tvShowSeasonFolder = Path.Combine(tvShowFolder, string.Format("Season {0}", season));
             Console.WriteLine("Checking if exists {0}", tvShowSeasonFolder);
             if (!Directory.Exists(tvShowSeasonFolder))
             {
                 Directory.CreateDirectory(tvShowSeasonFolder);
+                Console.WriteLine("Directory {0} created", tvShowSeasonFolder);
             }
             try
             {
