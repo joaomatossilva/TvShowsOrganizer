@@ -42,7 +42,7 @@ namespace TvShowsOrganizer
                     continue;
                 }
                 string tvShowTitle = matches.Groups[1].ToString().Trim();
-                tvShowTitle = tvShowTitle.Replace(".", " ");
+                tvShowTitle = CapitalizeWords(tvShowTitle.Replace(".", " ").ToLowerInvariant());
                 int season;
                 if (!int.TryParse(matches.Groups[2].Value, out season))
                 {
@@ -95,6 +95,12 @@ namespace TvShowsOrganizer
                     yield return show;
                 }
             }
+        }
+
+        private static string CapitalizeWords(string words)
+        {
+            var result = Regex.Replace(words, @"\b(\w)", m => m.Value.ToUpper());
+            return Regex.Replace(result, @"\s(of|in|by|and|a)\s", m => m.Value.ToLower(), RegexOptions.IgnoreCase);
         }
 
         private static void MoveFile(string file, string outputFolder, string tvShowTitle, int season)
